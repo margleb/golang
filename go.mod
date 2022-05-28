@@ -1,3 +1,3 @@
-module github.com/margleb/golang
+module github.com/margleb/main
 
 go 1.18
