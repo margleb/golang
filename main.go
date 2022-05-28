@@ -1,31 +1,26 @@
-package main
+package golang
 
 import (
-	"github.com/margleb/golang/helpers"
+	"errors"
 	"log"
 )
 
-var rangeNum int = 10
-
-func calculateValue(myChannel chan int) {
-	// получаем любое рандомное число
-	randNum := helpers.RandomNumber(rangeNum)
-	// передаем рандомное число в канал
-	myChannel <- randNum
+func main() {
+	result, err := devide(100.0, 10.0)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println("result of division is", result)
 }
 
-func main() {
-	// создаем канал
-	intChannel := make(chan int)
-	// закрываем канал после того как функция будет завершена
-	defer close(intChannel)
+func devide(x, y float32) (float32, error) {
+	var result float32
+	// нельзя делить на ноль
+	if y == 0 {
+		return result, errors.New("cannot devide by 0")
+	}
 
-	// передает канал в функ-цию
-	go calculateValue(intChannel)
-
-	// получаем значение из канала
-	// (слушает канал и кидает в него значение)
-	getNum := <-intChannel
-
-	log.Println("Полученное число из канала:", getNum)
+	result = x / y
+	return result, nil
 }
