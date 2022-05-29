@@ -5,22 +5,34 @@ import (
 	"net/http"
 )
 
+// не может быть изменяемым
+const portNumber = ":8080"
+
+// Home is the home page handler
+func Home(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "This is the home page")
+}
+
+// About is the about page handler
+func About(w http.ResponseWriter, r *http.Request) {
+	sum := addValues(2, 2)
+	_, _ = fmt.Fprintf(w, fmt.Sprintf("This is the about page and 2 + 2 is %d", sum))
+}
+
+// addValue adds to integers and return the sum
+// со строчной буквы делает видимость фун-ции только в этом пакете
+func addValues(x, y int) int {
+	return x + y
+}
+
+// main is the main application function
 func main() {
 
-	// маршрут, по какому пути нужно ждать ответ
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// записываем ответ ответ в барузер
-		n, err := fmt.Fprintf(w, "hello, world!")
-		if err != nil {
-			fmt.Println(err)
-		}
-		// Sprintf - позволят преобразовать в другой тип (int в string)
-		// n - кол-во записанных байтов
-		fmt.Println(fmt.Sprintf("Number of bytes written %d", n))
-	})
+	http.HandleFunc("/", Home)
+	http.HandleFunc("/about", About)
 
-	// слушаем конкретный порт на компьютере
-	// если есть ошибка то не получаем ее
-	_ = http.ListenAndServe(":8080", nil)
+	// пишет в консоль
+	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
 
+	_ = http.ListenAndServe(portNumber, nil)
 }
