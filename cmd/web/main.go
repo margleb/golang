@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/margleb/go-course/pkg/handlers"
 	"net/http"
 )
 
@@ -10,8 +11,8 @@ const portNumber = ":8080"
 // main is the main application function
 func main() {
 
-	http.HandleFunc("/", Home)
-	http.HandleFunc("/about", About)
+	http.HandleFunc("/", handlers.Home)
+	http.HandleFunc("/about", handlers.About)
 
 	_ = http.ListenAndServe(portNumber, nil)
 }
