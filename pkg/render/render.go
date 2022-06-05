@@ -1,7 +1,9 @@
 package render
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -13,20 +15,31 @@ var functions = template.FuncMap{}
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
 
 	// получаем кеш страниц
-	_, err := RenderTemplateTest(w)
+	tc, err := CreateTemplateCache()
 	if err != nil {
-		fmt.Println("Error getting template cache:", err)
+		log.Fatal(err)
 	}
 
-	parseTemplate, _ := template.ParseFiles("./templates/" + tmpl)
-	err = parseTemplate.Execute(w, nil)
-	if err != nil {
-		fmt.Println("error parsing template:", err)
-		return
+	// берем шаблон из сгенерированного кеша
+	t, ok := tc[tmpl]
+	// если шаблон не найден
+	if !ok {
+		log.Fatal(err)
 	}
+
+	buf := new(bytes.Buffer)
+	// записываем в буфер полученный шаблон
+	_ = t.Execute(buf, nil)
+	// записываем его в ответ
+	_, err = buf.WriteTo(w)
+	if err != nil {
+		fmt.Println("Error writing template to browser", err)
+	}
+
 }
 
-func RenderTemplateTest(w http.ResponseWriter) (map[string]*template.Template, error) {
+// CreateTemplateCache создаем кеш шаблона как map
+func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	// создаем map кеш страниц
 	myCache := map[string]*template.Template{}
@@ -42,7 +55,6 @@ func RenderTemplateTest(w http.ResponseWriter) (map[string]*template.Template, e
 
 		// название страницы
 		name := filepath.Base(page)
-		fmt.Println("The current page:", page)
 
 		// парсим конкретную страницу
 		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
