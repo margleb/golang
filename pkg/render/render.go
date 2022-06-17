@@ -63,15 +63,15 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		}
 
 		// сканируем все страницы c *.layouts.tmp
-		mathes, err := filepath.Glob("./templates/*.layout.tmpl")
+		matches, err := filepath.Glob("./templates/*.layout.tmpl")
 		if err != nil {
 			return myCache, err
 		}
 
 		// если есть шаблоны, то парсим их
-		if len(mathes) > 0 {
+		if len(matches) > 0 {
 			// парсим к странице конкретный шаблон
-			ts, err = ts.ParseGlob("/templates/*.layout.tmpl")
+			ts, err = ts.ParseGlob("./templates/*.layout.tmpl")
 			if err != nil {
 				return myCache, err
 			}
