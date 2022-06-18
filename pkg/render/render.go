@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/margleb/go-course/pkg/config"
+	"github.com/margleb/go-course/pkg/models"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -20,7 +21,12 @@ func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
+// AddDefaultData передает в шаблоны данные по умолчанию
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+	return td
+}
+
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 
 	var tc map[string]*template.Template
 	//  если необходимо использовать кеш
@@ -39,8 +45,12 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 	}
 
 	buf := new(bytes.Buffer)
+
+	// в случаем если данные по умолчанию то добавляет их
+	td = AddDefaultData(td)
+
 	// записываем в буфер полученный шаблон
-	_ = t.Execute(buf, nil)
+	_ = t.Execute(buf, td)
 	// записываем его в ответ
 	_, err := buf.WriteTo(w)
 	if err != nil {
