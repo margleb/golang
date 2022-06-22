@@ -21,6 +21,7 @@ func main() {
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("Cannot create tmp cache")
+
 	}
 	// сохраняем его в гл. переменную TemplateCache
 	app.TemplateCache = tc
@@ -31,8 +32,16 @@ func main() {
 
 	render.NewTemplates(&app)
 
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
+	// создаем сервер
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
 
-	_ = http.ListenAndServe(portNumber, nil)
+	// запускаем его
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
