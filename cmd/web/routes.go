@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/bmizerany/pat"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/margleb/go-course/pkg/config"
 	"github.com/margleb/go-course/pkg/handlers"
 	"net/http"
@@ -9,11 +10,13 @@ import (
 
 // Routes - маршруты с мультиплексером
 func routes(app *config.AppConfig) http.Handler {
-	// мультиплексер
-	m := pat.New()
-	// маршруты
-	m.Get("/", http.HandlerFunc(handlers.Repo.Home))
-	m.Get("/about", http.HandlerFunc(handlers.Repo.About))
-
-	return m
+	// маршрут
+	mux := chi.NewRouter()
+	// поглащает панику и печает стек
+	mux.Use(middleware.Recoverer)
+	// уст. маршруты
+	mux.Get("/", handlers.Repo.Home)
+	mux.Get("/about", handlers.Repo.About)
+	// возращаем
+	return mux
 }
