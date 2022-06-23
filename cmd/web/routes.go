@@ -18,6 +18,8 @@ func routes(app *config.AppConfig) http.Handler {
 	// mux.Use(WriteToConsole)
 	// посредник - устанавливаем CSRF токен
 	mux.Use(NoSurf)
+	// посредник - позволяет использовать сессии
+	mux.Use(SessionLoad)
 
 	// уст. маршруты
 	mux.Get("/", handlers.Repo.Home)

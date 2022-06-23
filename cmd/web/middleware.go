@@ -25,9 +25,14 @@ func NoSurf(next http.Handler) http.Handler {
 	csrfHandler.SetBaseCookie(http.Cookie{
 		HttpOnly: true,
 		Path:     "/",
-		Secure:   false,
+		Secure:   app.InProduction, // защиенные куки
 		SameSite: http.SameSiteLaxMode,
 	})
 	// возращаем обработчик
 	return csrfHandler
+}
+
+// SessionLoad - указываем, что необходимо использовать сессии
+func SessionLoad(next http.Handler) http.Handler {
+	return session.LoadAndSave(next)
 }

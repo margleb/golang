@@ -1,21 +1,36 @@
 package main
 
 import (
+	"github.com/alexedwards/scs/v2"
 	"github.com/margleb/go-course/pkg/config"
 	"github.com/margleb/go-course/pkg/handlers"
 	"github.com/margleb/go-course/pkg/render"
 	"log"
 	"net/http"
+	"time"
 )
 
 // не может быть изменяемым
 const portNumber = ":8080"
 
+// настройки приложения
+var app config.AppConfig
+
+// сессии (указываются в конфиге)
+var session *scs.SessionManager
+
 // main is the main application function
 func main() {
 
-	// настройки приложения
-	var app config.AppConfig
+	app.InProduction = false // находится ли сайт в продакшене
+
+	session = scs.New()                            // новая сессия
+	session.Lifetime = 24 * time.Hour              // 24 часа
+	session.Cookie.Persist = true                  // должны ли cookie оставаться после закрытия
+	session.Cookie.SameSite = http.SameSiteLaxMode // куки применяются к текущему сайту
+	session.Cookie.Secure = app.InProduction       // ну ли криптовать куки
+
+	app.Session = session // устанавливаем в конфиг сессии
 
 	// получаем кеш шаблонов
 	tc, err := render.CreateTemplateCache()
