@@ -12,8 +12,13 @@ import (
 func routes(app *config.AppConfig) http.Handler {
 	// маршрут
 	mux := chi.NewRouter()
-	// поглащает панику и печает стек
+	// посредник - поглащает панику и печает стек
 	mux.Use(middleware.Recoverer)
+	// посредник - просто пишет в консоль
+	// mux.Use(WriteToConsole)
+	// посредник - устанавливаем CSRF токен
+	mux.Use(NoSurf)
+
 	// уст. маршруты
 	mux.Get("/", handlers.Repo.Home)
 	mux.Get("/about", handlers.Repo.About)
